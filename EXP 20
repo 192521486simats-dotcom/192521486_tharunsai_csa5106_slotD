@@ -1,0 +1,49 @@
+#include <stdio.h>
+#include <string.h>
+
+void encryptECB(char *pt, char *key, char *ct, int len) {
+    for(int i=0;i<len;i++)
+        ct[i] = pt[i] ^ key[i % 8];
+}
+
+void encryptCBC(char *pt, char *key, char *ct, char *iv, int len) {
+    char prev[8];
+    strncpy(prev, iv, 8);
+
+    for(int i=0;i<len;i+=8) {
+        for(int j=0;j<8;j++) {
+            char temp = pt[i+j] ^ prev[j];
+            ct[i+j] = temp ^ key[j];
+            prev[j] = ct[i+j];
+        }
+    }
+}
+
+int main() {
+    char pt[100], key[9], iv[9];
+    char ecb[100], cbc[100];
+
+    printf("Enter plaintext (multiple of 8 chars): ");
+    scanf("%s", pt);
+
+    printf("Enter key (8 chars): ");
+    scanf("%s", key);
+
+    printf("Enter IV (8 chars): ");
+    scanf("%s", iv);
+
+    int len = strlen(pt);
+
+    encryptECB(pt, key, ecb, len);
+    encryptCBC(pt, key, cbc, iv, len);
+
+    printf("\nECB Ciphertext: ");
+    for(int i=0;i<len;i++) printf("%c", ecb[i]);
+
+    printf("\nCBC Ciphertext: ");
+    for(int i=0;i<len;i++) printf("%c", cbc[i]);
+
+    printf("\n");
+
+    return 0;
+}
