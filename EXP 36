@@ -1,0 +1,95 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+
+// Find modular inverse
+int inverse(int a)
+{
+    for(int i=1;i<26;i++)
+    {
+        if((a*i)%26==1)
+            return i;
+    }
+
+    return -1;
+}
+
+
+// Find gcd
+int gcd(int a,int b)
+{
+    while(b)
+    {
+        int t=b;
+        b=a%b;
+        a=t;
+    }
+
+    return a;
+}
+
+
+int main()
+{
+    char plaintext[100], ciphertext[100], decrypted[100];
+
+    int a,b;
+    int i;
+
+
+    printf("Enter plaintext: ");
+    scanf("%s",plaintext);
+
+
+    printf("Enter value of a: ");
+    scanf("%d",&a);
+
+
+    printf("Enter value of b: ");
+    scanf("%d",&b);
+
+
+
+    if(gcd(a,26)!=1)
+    {
+        printf("\nInvalid value of a");
+        printf("\nCipher is not one-to-one\n");
+        return 0;
+    }
+
+
+    // Encryption
+    for(i=0; plaintext[i]!='\0'; i++)
+    {
+        int p=tolower(plaintext[i])-'a';
+
+        ciphertext[i]=((a*p+b)%26)+'a';
+    }
+
+    ciphertext[i]='\0';
+
+
+
+    // Decryption
+    int inv=inverse(a);
+
+
+    for(i=0; ciphertext[i]!='\0'; i++)
+    {
+        int c=ciphertext[i]-'a';
+
+        decrypted[i]=((inv*(c-b+26))%26)+'a';
+    }
+
+    decrypted[i]='\0';
+
+
+
+    printf("\nCipher Text : %s",ciphertext);
+
+    printf("\nDecrypted Text : %s\n",decrypted);
+
+
+    return 0;
+}
