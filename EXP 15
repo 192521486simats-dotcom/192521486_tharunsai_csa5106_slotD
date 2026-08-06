@@ -1,0 +1,61 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+// simple scoring based on common letters
+int score_text(char text[]) {
+    int score = 0;
+    for(int i=0; text[i]; i++) {
+        char c = text[i];
+        if(c=='e'||c=='t'||c=='a'||c=='o'||c=='i'||c=='n')
+            score += 2;
+        else if(isalpha(c))
+            score += 1;
+    }
+    return score;
+}
+
+void decrypt(char cipher[], int key, char result[]) {
+    for(int i=0; cipher[i]; i++) {
+        if(isalpha(cipher[i])) {
+            char c = tolower(cipher[i]);
+            result[i] = ((c - 'a' - key + 26) % 26) + 'a';
+        } else {
+            result[i] = cipher[i];
+        }
+    }
+    result[strlen(cipher)] = '\0';
+}
+
+int main() {
+    char cipher[200], results[26][200];
+    int scores[26], top;
+
+    printf("Enter ciphertext: ");
+    fgets(cipher, sizeof(cipher), stdin);
+
+    printf("Enter number of top results: ");
+    scanf("%d", &top);
+
+    // try all keys
+    for(int k=0; k<26; k++) {
+        decrypt(cipher, k, results[k]);
+        scores[k] = score_text(results[k]);
+    }
+
+    // print top results
+    for(int t=0; t<top; t++) {
+        int max = -1, idx = -1;
+        for(int i=0; i<26; i++) {
+            if(scores[i] > max) {
+                max = scores[i];
+                idx = i;
+            }
+        }
+
+        printf("\nKey %d: %s", idx, results[idx]);
+        scores[idx] = -1; // mark used
+    }
+
+    return 0;
+}
