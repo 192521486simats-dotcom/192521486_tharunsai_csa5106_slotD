@@ -1,0 +1,116 @@
+#include <stdio.h>
+
+#define SIZE 2
+
+int main()
+{
+    int P[2][2], C[2][2];
+    int K[2][2];
+
+    int det, invDet;
+
+
+    printf("Enter plaintext matrix (2x2):\n");
+
+    for(int i=0;i<2;i++)
+        for(int j=0;j<2;j++)
+            scanf("%d",&P[i][j]);
+
+
+    printf("Enter ciphertext matrix (2x2):\n");
+
+    for(int i=0;i<2;i++)
+        for(int j=0;j<2;j++)
+            scanf("%d",&C[i][j]);
+
+
+
+    // determinant of plaintext matrix
+
+    det = (P[0][0]*P[1][1] -
+          P[0][1]*P[1][0]) % 26;
+
+
+    if(det < 0)
+        det += 26;
+
+
+    // find inverse determinant
+
+    invDet=-1;
+
+    for(int i=0;i<26;i++)
+    {
+        if((det*i)%26==1)
+        {
+            invDet=i;
+            break;
+        }
+    }
+
+
+    if(invDet==-1)
+    {
+        printf("Matrix inverse does not exist");
+        return 0;
+    }
+
+
+
+    // Inverse of plaintext matrix
+
+    int Pinv[2][2];
+
+
+    Pinv[0][0]=(P[1][1]*invDet)%26;
+    Pinv[0][1]=(-P[0][1]*invDet)%26;
+    Pinv[1][0]=(-P[1][0]*invDet)%26;
+    Pinv[1][1]=(P[0][0]*invDet)%26;
+
+
+
+    // adjust negative values
+
+    for(int i=0;i<2;i++)
+    {
+        for(int j=0;j<2;j++)
+        {
+            if(Pinv[i][j]<0)
+                Pinv[i][j]+=26;
+        }
+    }
+
+
+
+    // K = C * P inverse
+
+    for(int i=0;i<2;i++)
+    {
+        for(int j=0;j<2;j++)
+        {
+            K[i][j]=0;
+
+            for(int k=0;k<2;k++)
+            {
+                K[i][j]+=C[i][k]*Pinv[k][j];
+            }
+
+            K[i][j]%=26;
+        }
+    }
+
+
+
+    printf("\nRecovered Key Matrix:\n");
+
+    for(int i=0;i<2;i++)
+    {
+        for(int j=0;j<2;j++)
+            printf("%d\t",K[i][j]);
+
+        printf("\n");
+    }
+
+
+    return 0;
+}
