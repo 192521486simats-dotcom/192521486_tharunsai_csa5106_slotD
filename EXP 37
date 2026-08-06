@@ -1,0 +1,99 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+#define MAX 1000
+
+
+// English frequency order
+char freq[]="ETAOINSHRDLCUMWFGYPBVKJXQZ";
+
+
+void frequency(char text[], int count[])
+{
+    for(int i=0;text[i]!='\0';i++)
+    {
+        if(isalpha(text[i]))
+        {
+            char ch=toupper(text[i]);
+            count[ch-'A']++;
+        }
+    }
+}
+
+
+int main()
+{
+    char cipher[MAX];
+    char result[MAX];
+
+    int count[26]={0};
+
+    int top;
+
+
+    printf("Enter cipher text: ");
+    scanf(" %[^\n]",cipher);
+
+
+    printf("Enter number of possible plaintexts: ");
+    scanf("%d",&top);
+
+
+    frequency(cipher,count);
+
+
+    // sort letters based on frequency
+
+    char sorted[26];
+    int used[26]={0};
+
+
+    for(int i=0;i<26;i++)
+    {
+        int max=-1,index=-1;
+
+        for(int j=0;j<26;j++)
+        {
+            if(!used[j] && count[j]>max)
+            {
+                max=count[j];
+                index=j;
+            }
+        }
+
+        used[index]=1;
+        sorted[i]='A'+index;
+    }
+
+
+
+    printf("\nPossible Plaintexts:\n");
+
+
+    for(int k=0;k<top;k++)
+    {
+        printf("\n%d. ",k+1);
+
+        for(int i=0;cipher[i]!='\0';i++)
+        {
+            if(isalpha(cipher[i]))
+            {
+                char c=toupper(cipher[i]);
+
+                int pos=c-'A';
+
+                result[i]=freq[pos];
+
+                printf("%c",result[i]);
+            }
+            else
+                printf("%c",cipher[i]);
+        }
+    }
+
+
+    printf("\n");
+
+    return 0;
+}
