@@ -1,0 +1,35 @@
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+
+int main() {
+    char text[100], clean[100], result[100];
+    int key[100];
+    int i, j=0, n;
+
+    printf("Enter plaintext: ");
+    fgets(text, sizeof(text), stdin);
+
+    // remove spaces
+    for(i=0; text[i]; i++) {
+        if(isalpha(text[i]))
+            clean[j++] = tolower(text[i]);
+    }
+    clean[j] = '\0';
+
+    printf("Enter key stream (%d numbers):\n", j);
+    for(i=0;i<j;i++)
+        scanf("%d",&key[i]);
+
+    // Encryption
+    for(i=0;i<j;i++) {
+        int p = clean[i]-'a';
+        int c = (p + key[i]) % 26;
+        result[i] = c + 'a';
+    }
+    result[j] = '\0';
+
+    printf("\nCipher Text: %s\n", result);
+
+    return 0;
+}
