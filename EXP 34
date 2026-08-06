@@ -1,0 +1,126 @@
+#include <stdio.h>
+#include <string.h>
+
+#define BLOCK 8
+
+
+// Simple encryption function
+void encrypt(char in[], char key[], char out[])
+{
+    for(int i=0;i<BLOCK;i++)
+        out[i] = in[i] ^ key[i];
+}
+
+
+// Padding function
+int padding(char text[])
+{
+    int len = strlen(text);
+
+    int pad = BLOCK - (len % BLOCK);
+
+    if(pad == 0)
+        pad = BLOCK;
+
+    text[len] = '1';
+
+    for(int i=1;i<pad;i++)
+        text[len+i]='0';
+
+    text[len+pad]='\0';
+
+    return len+pad;
+}
+
+
+int main()
+{
+    char plaintext[100];
+    char key[BLOCK+1];
+    char iv[BLOCK+1];
+
+    char ecb[100];
+    char cbc[100];
+    char cfb[100];
+
+    char block[BLOCK];
+    char temp[BLOCK];
+
+    printf("Enter plaintext: ");
+    scanf("%s",plaintext);
+
+
+    printf("Enter 8-bit key: ");
+    scanf("%s",key);
+
+
+    printf("Enter IV: ");
+    scanf("%s",iv);
+
+
+    int len = padding(plaintext);
+
+
+    // -------- ECB MODE --------
+    for(int i=0;i<len;i+=BLOCK)
+    {
+        encrypt(plaintext+i,key,ecb+i);
+    }
+
+
+    // -------- CBC MODE --------
+    char previous[BLOCK];
+
+    strcpy(previous,iv);
+
+    for(int i=0;i<len;i+=BLOCK)
+    {
+        for(int j=0;j<BLOCK;j++)
+            block[j]=plaintext[i+j]^previous[j];
+
+
+        encrypt(block,key,cbc+i);
+
+        for(int j=0;j<BLOCK;j++)
+            previous[j]=cbc[i+j];
+    }
+
+
+
+    // -------- CFB MODE --------
+
+    strcpy(previous,iv);
+
+    for(int i=0;i<len;i+=BLOCK)
+    {
+        encrypt(previous,key,temp);
+
+        for(int j=0;j<BLOCK;j++)
+        {
+            cfb[i+j]=plaintext[i+j]^temp[j];
+            previous[j]=cfb[i+j];
+        }
+    }
+
+
+
+    printf("\nPadded Plaintext : %s",plaintext);
+
+
+    printf("\n\nECB Cipher Text : ");
+    for(int i=0;i<len;i++)
+        printf("%c",ecb[i]);
+
+
+    printf("\nCBC Cipher Text : ");
+    for(int i=0;i<len;i++)
+        printf("%c",cbc[i]);
+
+
+    printf("\nCFB Cipher Text : ");
+    for(int i=0;i<len;i++)
+        printf("%c",cfb[i]);
+
+
+    return 0;
+}
