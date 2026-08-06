@@ -1,0 +1,67 @@
+#include <stdio.h>
+
+// function to find modular inverse of determinant
+int modInverse(int det) {
+    det = det % 26;
+    for(int i = 1; i < 26; i++)
+        if((det * i) % 26 == 1)
+            return i;
+    return -1;
+}
+
+int main() {
+    int P[2][2], C[2][2], Pinv[2][2], K[2][2];
+    int det, invDet;
+
+    printf("Enter Plaintext matrix (2x2):\n");
+    for(int i=0;i<2;i++)
+        for(int j=0;j<2;j++)
+            scanf("%d",&P[i][j]);
+
+    printf("Enter Ciphertext matrix (2x2):\n");
+    for(int i=0;i<2;i++)
+        for(int j=0;j<2;j++)
+            scanf("%d",&C[i][j]);
+
+    // determinant
+    det = (P[0][0]*P[1][1] - P[0][1]*P[1][0]) % 26;
+    if(det < 0) det += 26;
+
+    invDet = modInverse(det);
+
+    if(invDet == -1) {
+        printf("Matrix not invertible!\n");
+        return 0;
+    }
+
+    // inverse of P
+    Pinv[0][0] =  P[1][1];
+    Pinv[0][1] = -P[0][1];
+    Pinv[1][0] = -P[1][0];
+    Pinv[1][1] =  P[0][0];
+
+    for(int i=0;i<2;i++)
+        for(int j=0;j<2;j++) {
+            Pinv[i][j] = (Pinv[i][j] * invDet) % 26;
+            if(Pinv[i][j] < 0) Pinv[i][j] += 26;
+        }
+
+    // K = C * Pinv mod 26
+    for(int i=0;i<2;i++) {
+        for(int j=0;j<2;j++) {
+            K[i][j] = 0;
+            for(int k=0;k<2;k++)
+                K[i][j] += C[i][k] * Pinv[k][j];
+            K[i][j] %= 26;
+        }
+    }
+
+    printf("\nRecovered Key Matrix:\n");
+    for(int i=0;i<2;i++) {
+        for(int j=0;j<2;j++)
+            printf("%d ", K[i][j]);
+        printf("\n");
+    }
+
+    return 0;
+}
