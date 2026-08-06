@@ -1,0 +1,73 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+char freqOrder[] = "etaoinshrdlcumwfgypbvkjxqz";
+
+// count frequency
+void getFrequency(char text[], int freq[]) {
+    for(int i=0;i<26;i++) freq[i]=0;
+    for(int i=0;text[i];i++) {
+        if(isalpha(text[i]))
+            freq[tolower(text[i])-'a']++;
+    }
+}
+
+// sort letters by frequency
+void sortByFreq(int freq[], char letters[]) {
+    for(int i=0;i<26;i++) letters[i] = 'a'+i;
+
+    for(int i=0;i<25;i++) {
+        for(int j=i+1;j<26;j++) {
+            if(freq[letters[j]-'a'] > freq[letters[i]-'a']) {
+                char t = letters[i];
+                letters[i] = letters[j];
+                letters[j] = t;
+            }
+        }
+    }
+}
+
+// generate plaintext using shift in mapping
+void generatePlain(char cipher[], char map[], char result[]) {
+    for(int i=0; cipher[i]; i++) {
+        if(isalpha(cipher[i])) {
+            char c = tolower(cipher[i]);
+            result[i] = map[c-'a'];
+        } else {
+            result[i] = cipher[i];
+        }
+    }
+    result[strlen(cipher)] = '\0';
+}
+
+int main() {
+    char cipher[200], result[200];
+    int freq[26], top;
+
+    printf("Enter ciphertext: ");
+    fgets(cipher, sizeof(cipher), stdin);
+
+    printf("Enter number of outputs: ");
+    scanf("%d",&top);
+
+    getFrequency(cipher, freq);
+
+    char sorted[26];
+    sortByFreq(freq, sorted);
+
+    // try different mappings
+    for(int k=0; k<top; k++) {
+        char map[26];
+
+        for(int i=0;i<26;i++) {
+            map[sorted[i]-'a'] = freqOrder[(i+k)%26];
+        }
+
+        generatePlain(cipher, map, result);
+
+        printf("\nOption %d:\n%s\n", k+1, result);
+    }
+
+    return 0;
+}
