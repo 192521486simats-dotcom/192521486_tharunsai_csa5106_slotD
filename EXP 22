@@ -1,0 +1,38 @@
+#include <stdio.h>
+
+// simple XOR function
+int xor(int a, int b) {
+    return a ^ b;
+}
+
+// simplified S-DES encryption (dummy for lab)
+int sdes_encrypt(int pt, int key) {
+    return pt ^ key;   // simplified (not full S-DES)
+}
+
+// simplified S-DES decryption
+int sdes_decrypt(int ct, int key) {
+    return ct ^ key;
+}
+
+int main() {
+    int pt[2] = {0x01, 0x23};   // plaintext blocks
+    int key = 0x7D;             // key
+    int iv = 0xAA;              // IV = 10101010
+
+    int ct[2], dt[2];
+
+    // CBC Encryption
+    ct[0] = sdes_encrypt(xor(pt[0], iv), key);
+    ct[1] = sdes_encrypt(xor(pt[1], ct[0]), key);
+
+    printf("Cipher Text: %02X %02X\n", ct[0], ct[1]);
+
+    // CBC Decryption
+    dt[0] = xor(sdes_decrypt(ct[0], key), iv);
+    dt[1] = xor(sdes_decrypt(ct[1], key), ct[0]);
+
+    printf("Decrypted Text: %02X %02X\n", dt[0], dt[1]);
+
+    return 0;
+}
