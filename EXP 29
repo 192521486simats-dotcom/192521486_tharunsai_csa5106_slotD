@@ -1,0 +1,46 @@
+#include <stdio.h>
+
+int main()
+{
+    int blockSize = 1024;
+    int laneSize = 64;
+
+    int capacity = 1600 - blockSize;
+
+    int capacityLanes = capacity / laneSize;
+
+    int filled = 0;
+    int blocks = 0;
+
+    int messageLanes = blockSize / laneSize;
+
+
+    printf("Enter number of non-zero lanes in first block: ");
+    scanf("%d", &messageLanes);
+
+
+    printf("\nCapacity bits : %d", capacity);
+    printf("\nCapacity lanes: %d\n", capacityLanes);
+
+
+    while(filled < capacityLanes)
+    {
+        blocks++;
+
+        // every new block fills available lanes
+        filled += messageLanes;
+
+        if(filled > capacityLanes)
+            filled = capacityLanes;
+
+        printf("\nAfter block %d : %d capacity lanes filled",
+                blocks, filled);
+    }
+
+
+    printf("\n\nAll capacity lanes contain non-zero bits");
+    printf("\nBlocks required = %d\n", blocks);
+
+
+    return 0;
+}
