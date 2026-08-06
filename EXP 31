@@ -1,0 +1,50 @@
+#include <stdio.h>
+
+unsigned long long leftShift(unsigned long long x)
+{
+    return x << 1;
+}
+
+unsigned long long generateSubkey(unsigned long long L,
+                                  unsigned long long Rb)
+{
+    unsigned long long K;
+
+    // check MSB
+    if(L & 0x8000000000000000)
+        K = (L << 1) ^ Rb;
+    else
+        K = L << 1;
+
+    return K;
+}
+
+
+int main()
+{
+    unsigned long long L;
+    unsigned long long K1, K2;
+    unsigned long long Rb;
+
+
+    printf("Enter encrypted zero block L (hex): ");
+    scanf("%llx",&L);
+
+
+    printf("Enter Rb constant (hex): ");
+    scanf("%llx",&Rb);
+
+
+    // First subkey
+    K1 = generateSubkey(L,Rb);
+
+    // Second subkey
+    K2 = generateSubkey(K1,Rb);
+
+
+    printf("\nFirst Subkey K1 = %llx",K1);
+    printf("\nSecond Subkey K2 = %llx\n",K2);
+
+
+    return 0;
+}
