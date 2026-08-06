@@ -1,0 +1,96 @@
+#include <stdio.h>
+#include <string.h>
+
+// simple hash function
+int hash(char msg[])
+{
+    int h = 0;
+
+    for(int i=0; msg[i]!='\0'; i++)
+        h += msg[i];
+
+    return h;
+}
+
+
+// DSA simulation
+void DSA(char msg[], int k, int x)
+{
+    int q = 23;
+    int g = 5;
+
+    int h = hash(msg);
+
+    int r = 1;
+
+    for(int i=0;i<k;i++)
+        r = (r * g) % q;
+
+    r = r % q;
+
+    int s = (h + x*r + k) % q;
+
+
+    printf("k = %d\n",k);
+    printf("Signature (r,s) = (%d,%d)\n\n",r,s);
+}
+
+
+// RSA simulation
+int RSA(int m,int d,int n)
+{
+    int result=1;
+
+    while(d--)
+        result=(result*m)%n;
+
+    return result;
+}
+
+
+int main()
+{
+    char msg[100];
+
+    int x;
+    int k1,k2;
+
+
+    printf("Enter message: ");
+    scanf("%s",msg);
+
+
+    printf("Enter DSA private key x: ");
+    scanf("%d",&x);
+
+
+    printf("Enter first random k: ");
+    scanf("%d",&k1);
+
+
+    printf("Enter second random k: ");
+    scanf("%d",&k2);
+
+
+    printf("\nDSA Signatures:\n");
+
+    DSA(msg,k1,x);
+    DSA(msg,k2,x);
+
+
+    printf("RSA Signature:\n");
+
+    printf("Enter RSA private key d and modulus n: ");
+
+    int d,n;
+    scanf("%d%d",&d,&n);
+
+
+    int m=hash(msg);
+
+    printf("RSA Signature = %d\n",
+           RSA(m,d,n));
+
+
+    return 0;
+}
