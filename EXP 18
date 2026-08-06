@@ -1,0 +1,57 @@
+#include <stdio.h>
+#include <string.h>
+
+// simplified PC-2 selection (just demonstration)
+int PC2_C[24] = {1,2,3,4,5,6,7,8,9,10,11,12,
+                 13,14,15,16,17,18,19,20,21,22,23,24};
+
+int PC2_D[24] = {1,2,3,4,5,6,7,8,9,10,11,12,
+                 13,14,15,16,17,18,19,20,21,22,23,24};
+
+void leftShift(char *half, int shifts) {
+    while(shifts--) {
+        char temp = half[0];
+        for(int i=0;i<27;i++)
+            half[i] = half[i+1];
+        half[27] = temp;
+    }
+}
+
+int main() {
+    char key[57];
+    char C[28], D[28];
+    char subkey[49];
+    int shifts[16] = {1,1,2,2,2,2,2,2,1,2,2,2,2,2,2,1};
+
+    printf("Enter 56-bit key: ");
+    scanf("%s", key);
+
+    // split key
+    strncpy(C, key, 28);
+    strncpy(D, key+28, 28);
+
+    printf("\nSubkeys:\n");
+
+    for(int r=0; r<16; r++) {
+        leftShift(C, shifts[r]);
+        leftShift(D, shifts[r]);
+
+        // first 24 bits from C
+        for(int i=0;i<24;i++)
+            subkey[i] = C[PC2_C[i]-1];
+
+        // next 24 bits from D
+        for(int i=0;i<24;i++)
+            subkey[i+24] = D[PC2_D[i]-1];
+
+        subkey[48] = '\0';
+
+        printf("K%d: %s\n", r+1, subkey);
+    }
+
+    printf("\nObservation:\n");
+    printf("First 24 bits of each subkey come from C\n");
+    printf("Last 24 bits come from D\n");
+
+    return 0;
+}
