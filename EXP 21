@@ -1,0 +1,82 @@
+#include <stdio.h>
+#include <string.h>
+
+#define BS 8
+
+// simple XOR encryption
+void encryptBlock(char *in, char *key, char *out) {
+    for(int i=0;i<BS;i++)
+        out[i] = in[i] ^ key[i];
+}
+
+// padding: add '1' then '0's
+int pad(char *text) {
+    int len = strlen(text);
+    int padLen = BS - (len % BS);
+
+    if(padLen == 0) padLen = BS;
+
+    text[len] = '1';
+    for(int i=1;i<padLen;i++)
+        text[len+i] = '0';
+
+    text[len+padLen] = '\0';
+    return len + padLen;
+}
+
+int main() {
+    char pt[200], key[9], iv[9];
+    char ecb[200], cbc[200], cfb[200];
+    char block[BS], prev[BS];
+
+    printf("Enter plaintext: ");
+    scanf("%s", pt);
+
+    printf("Enter key (8 chars): ");
+    scanf("%s", key);
+
+    printf("Enter IV (8 chars): ");
+    scanf("%s", iv);
+
+    int len = pad(pt);
+
+    // ECB
+    for(int i=0;i<len;i+=BS)
+        encryptBlock(pt+i, key, ecb+i);
+
+    // CBC
+    memcpy(prev, iv, BS);
+    for(int i=0;i<len;i+=BS) {
+        for(int j=0;j<BS;j++)
+            block[j] = pt[i+j] ^ prev[j];
+
+        encryptBlock(block, key, cbc+i);
+        memcpy(prev, cbc+i, BS);
+    }
+
+    // CFB
+    memcpy(prev, iv, BS);
+    for(int i=0;i<len;i+=BS) {
+        encryptBlock(prev, key, block);
+
+        for(int j=0;j<BS;j++)
+            cfb[i+j] = pt[i+j] ^ block[j];
+
+        memcpy(prev, cfb+i, BS);
+    }
+
+    printf("\nPadded Plaintext: %s\n", pt);
+
+    printf("\nECB: ");
+    for(int i=0;i<len;i++) printf("%c", ecb[i]);
+
+    printf("\nCBC: ");
+    for(int i=0;i<len;i++) printf("%c", cbc[i]);
+
+    printf("\nCFB: ");
+    for(int i=0;i<len;i++) printf("%c", cfb[i]);
+
+    printf("\n");
+
+    return 0;
+}
