@@ -1,0 +1,40 @@
+#include <stdio.h>
+
+// simplified S-DES (for lab)
+int sdes(int data, int key) {
+    return data ^ key;   // dummy S-DES
+}
+
+int main() {
+    int pt[3] = {0x01, 0x02, 0x04};  // plaintext blocks
+    int key = 0x7D;                  // key
+    int counter = 0x00;              // initial counter
+
+    int ct[3], dt[3];
+    int i;
+
+    // CTR Encryption
+    for(i = 0; i < 3; i++) {
+        ct[i] = pt[i] ^ sdes(counter, key);
+        counter++;
+    }
+
+    printf("Cipher Text: ");
+    for(i = 0; i < 3; i++)
+        printf("%02X ", ct[i]);
+
+    // Reset counter for decryption
+    counter = 0x00;
+
+    // CTR Decryption (same as encryption)
+    for(i = 0; i < 3; i++) {
+        dt[i] = ct[i] ^ sdes(counter, key);
+        counter++;
+    }
+
+    printf("\nDecrypted Text: ");
+    for(i = 0; i < 3; i++)
+        printf("%02X ", dt[i]);
+
+    return 0;
+}
