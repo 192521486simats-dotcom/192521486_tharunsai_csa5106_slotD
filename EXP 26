@@ -1,0 +1,35 @@
+#include <stdio.h>
+
+// gcd function
+int gcd(int a, int b) {
+    while(b != 0) {
+        int t = b;
+        b = a % b;
+        a = t;
+    }
+    return a;
+}
+
+int main() {
+    int e, d, n;
+
+    printf("Enter public key (e, n): ");
+    scanf("%d %d", &e, &n);
+
+    printf("Enter leaked private key d: ");
+    scanf("%d", &d);
+
+    printf("\nPrivate key leaked!\n");
+
+    // Check relation (e*d ≡ 1 mod phi(n)) conceptually
+    int k = e * d - 1;
+
+    printf("Computed value (e*d - 1) = %d\n", k);
+    printf("This value is a multiple of phi(n)\n");
+
+    printf("\nConclusion:\n");
+    printf("Reusing same n is NOT SAFE.\n");
+    printf("Attacker can factor n and break all future keys.\n");
+
+    return 0;
+}
