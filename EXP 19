@@ -1,0 +1,59 @@
+#include <stdio.h>
+#include <string.h>
+
+// simple XOR encryption (placeholder for DES)
+void simpleEncrypt(char *block, char *key, char *out) {
+    for(int i=0;i<8;i++)
+        out[i] = block[i] ^ key[i];
+}
+
+// 3DES (EDE simulation)
+void tripleDES(char *block, char *k1, char *k2, char *k3, char *out) {
+    char t1[8], t2[8];
+    simpleEncrypt(block, k1, t1);
+    simpleEncrypt(t1, k2, t2);
+    simpleEncrypt(t2, k3, out);
+}
+
+int main() {
+    char plaintext[100], key1[9], key2[9], key3[9], iv[9];
+    char block[9], prev[9], cipher[100];
+
+    printf("Enter plaintext (multiple of 8 chars): ");
+    scanf("%s", plaintext);
+
+    printf("Enter Key1 (8 chars): ");
+    scanf("%s", key1);
+
+    printf("Enter Key2 (8 chars): ");
+    scanf("%s", key2);
+
+    printf("Enter Key3 (8 chars): ");
+    scanf("%s", key3);
+
+    printf("Enter IV (8 chars): ");
+    scanf("%s", iv);
+
+    strncpy(prev, iv, 8);
+
+    int len = strlen(plaintext);
+
+    for(int i=0; i<len; i+=8) {
+        strncpy(block, plaintext+i, 8);
+
+        // XOR with previous ciphertext (CBC)
+        for(int j=0;j<8;j++)
+            block[j] ^= prev[j];
+
+        // 3DES encryption
+        tripleDES(block, key1, key2, key3, prev);
+
+        strncpy(cipher+i, prev, 8);
+    }
+
+    cipher[len] = '\0';
+
+    printf("\nCiphertext: %s\n", cipher);
+
+    return 0;
+}
