@@ -1,0 +1,65 @@
+#include <stdio.h>
+
+// function to find gcd
+int gcd(int a, int b) {
+    while(b != 0) {
+        int t = b;
+        b = a % b;
+        a = t;
+    }
+    return a;
+}
+
+// Extended Euclidean Algorithm to find inverse
+int modInverse(int e, int phi) {
+    int t = 0, newt = 1;
+    int r = phi, newr = e;
+
+    while(newr != 0) {
+        int q = r / newr;
+
+        int temp = newt;
+        newt = t - q * newt;
+        t = temp;
+
+        temp = newr;
+        newr = r - q * newr;
+        r = temp;
+    }
+
+    if(r > 1) return -1; // not invertible
+    if(t < 0) t += phi;
+
+    return t;
+}
+
+int main() {
+    int e, n, i, p = 0, q = 0;
+
+    printf("Enter public key (e n): ");
+    scanf("%d %d", &e, &n);
+
+    // find p and q using trial division
+    for(i = 2; i < n; i++) {
+        if(n % i == 0) {
+            p = i;
+            q = n / i;
+            break;
+        }
+    }
+
+    if(p == 0 || q == 0) {
+        printf("Failed to factor n\n");
+        return 0;
+    }
+
+    int phi = (p - 1) * (q - 1);
+
+    int d = modInverse(e, phi);
+
+    printf("p = %d, q = %d\n", p, q);
+    printf("phi(n) = %d\n", phi);
+    printf("Private key (d) = %d\n", d);
+
+    return 0;
+}
