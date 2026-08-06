@@ -1,0 +1,35 @@
+#include <stdio.h>
+
+// function to find gcd
+int gcd(int a, int b) {
+    while(b != 0) {
+        int t = b;
+        b = a % b;
+        a = t;
+    }
+    return a;
+}
+
+int main() {
+    int n, e, M;
+
+    printf("Enter n and e: ");
+    scanf("%d %d", &n, &e);
+
+    printf("Enter plaintext block M: ");
+    scanf("%d", &M);
+
+    int g = gcd(M, n);
+
+    if(g > 1 && g < n) {
+        int p = g;
+        int q = n / g;
+
+        printf("Common factor found!\n");
+        printf("p = %d, q = %d\n", p, q);
+    } else {
+        printf("No useful factor found. RSA remains secure.\n");
+    }
+
+    return 0;
+}
