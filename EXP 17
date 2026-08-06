@@ -1,0 +1,55 @@
+#include <stdio.h>
+#include <string.h>
+
+int shifts[16] = {1,1,2,2,2,2,2,2,1,2,2,2,2,2,2,1};
+
+void leftShift(char *key, int n) {
+    while(n--) {
+        char temp = key[0];
+        for(int i=0;i<27;i++)
+            key[i] = key[i+1];
+        key[27] = temp;
+    }
+}
+
+// generate 16 subkeys
+void generateKeys(char key[], char subkeys[16][56]) {
+    char left[28], right[28];
+
+    strncpy(left, key, 28);
+    strncpy(right, key+28, 28);
+
+    for(int i=0;i<16;i++) {
+        leftShift(left, shifts[i]);
+        leftShift(right, shifts[i]);
+
+        // combine
+        strncpy(subkeys[i], left, 28);
+        strncpy(subkeys[i]+28, right, 28);
+    }
+}
+
+int main() {
+    char key[57], subkeys[16][56];
+    char text[100];
+
+    printf("Enter 56-bit key (binary): ");
+    scanf("%s", key);
+
+    printf("Enter ciphertext (binary): ");
+    scanf("%s", text);
+
+    generateKeys(key, subkeys);
+
+    printf("\nKeys for Decryption (Reverse Order):\n");
+    for(int i=15;i>=0;i--) {
+        printf("K%d: ", i+1);
+        for(int j=0;j<56;j++)
+            printf("%c", subkeys[i][j]);
+        printf("\n");
+    }
+
+    printf("\nDecryption uses keys from K16 to K1.\n");
+
+    return 0;
+}
