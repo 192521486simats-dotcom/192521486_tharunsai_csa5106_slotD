@@ -1,0 +1,63 @@
+#include <stdio.h>
+#include <string.h>
+
+// Simple DES Feistel demonstration
+
+unsigned long long encryptDES(unsigned long long block,
+                              unsigned long long key)
+{
+    for(int i=0;i<16;i++)
+    {
+        block = block ^ key;
+        block = (block << 1) | (block >> 63);
+    }
+
+    return block;
+}
+
+
+unsigned long long decryptDES(unsigned long long block,
+                              unsigned long long key)
+{
+    for(int i=15;i>=0;i--)
+    {
+        block = (block >> 1) | (block << 63);
+        block = block ^ key;
+    }
+
+    return block;
+}
+
+
+int main()
+{
+    unsigned long long plaintext;
+    unsigned long long key;
+    unsigned long long ciphertext;
+    unsigned long long decrypted;
+
+
+    printf("Enter 64-bit plaintext (hex): ");
+    scanf("%llx",&plaintext);
+
+
+    printf("Enter 56-bit key (hex): ");
+    scanf("%llx",&key);
+
+
+    // Encryption
+    ciphertext = encryptDES(plaintext,key);
+
+
+    printf("\nCipher Text : %llx",ciphertext);
+
+
+    // Decryption
+    decrypted = decryptDES(ciphertext,key);
+
+
+    printf("\nDecrypted Text : %llx\n",decrypted);
+
+
+    return 0;
+}
