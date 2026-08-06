@@ -1,0 +1,114 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+#define MAX 1000
+
+// English frequency order
+char freqOrder[] = "ETAOINSHRDLCUMWFGYPBVKJXQZ";
+
+
+// Function to count frequency
+void countFrequency(char text[], int freq[])
+{
+    for(int i=0; text[i]!='\0'; i++)
+    {
+        if(isalpha(text[i]))
+        {
+            char ch=toupper(text[i]);
+            freq[ch-'A']++;
+        }
+    }
+}
+
+
+// Sort letters according to frequency
+void sortLetters(int freq[], char sorted[])
+{
+    int used[26]={0};
+
+    for(int i=0;i<26;i++)
+    {
+        int max=-1;
+        int index=-1;
+
+        for(int j=0;j<26;j++)
+        {
+            if(!used[j] && freq[j]>max)
+            {
+                max=freq[j];
+                index=j;
+            }
+        }
+
+        used[index]=1;
+        sorted[i]='A'+index;
+    }
+}
+
+
+// Generate plaintext
+void decrypt(char cipher[], char map[])
+{
+    for(int i=0; cipher[i]!='\0'; i++)
+    {
+        if(isalpha(cipher[i]))
+        {
+            char ch=toupper(cipher[i]);
+
+            printf("%c",map[ch-'A']);
+        }
+        else
+        {
+            printf("%c",cipher[i]);
+        }
+    }
+
+    printf("\n");
+}
+
+
+int main()
+{
+    char cipher[MAX];
+    char sorted[26];
+    char map[26];
+
+    int frequency[26]={0};
+    int top;
+
+
+    printf("Enter cipher text: ");
+    scanf(" %[^\n]",cipher);
+
+
+    printf("Enter number of possible plaintexts: ");
+    scanf("%d",&top);
+
+
+    countFrequency(cipher,frequency);
+
+
+    sortLetters(frequency,sorted);
+
+
+    // Create substitution map
+    for(int i=0;i<26;i++)
+    {
+        map[sorted[i]-'A']=freqOrder[i];
+    }
+
+
+    printf("\nPossible Plaintexts:\n");
+
+
+    for(int i=0;i<top;i++)
+    {
+        printf("\n%d. ",i+1);
+
+        decrypt(cipher,map);
+    }
+
+
+    return 0;
+}
